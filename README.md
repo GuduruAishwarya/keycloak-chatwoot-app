@@ -4,7 +4,6 @@
 - **Frontend:** Next.js (TypeScript)
 - **Knowledge Base:** Outline (OIDC-protected via Keycloak)
 - **Chat:** Chatwoot (with AI bot)
-- **Bot:** Node.js Express (connects Chatwoot <-> Outline)
 - **Auth:** Keycloak SSO for all services
 - **Database:** PostgreSQL for Outline and Chatwoot
 - **Orchestration:** Docker Compose
