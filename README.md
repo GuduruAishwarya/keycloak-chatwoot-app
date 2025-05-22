@@ -30,9 +30,9 @@ cd keycloak-chatwoot-app
 1. Access Keycloak at `http://localhost:8080`
 2. A new realm (e.g., `kb-chat-demo`)
 3. clients:
-   - `kb-ui` (public, for frontend)
-   - `outline-client` (confidential, for Outline OIDC)
-   - `chatwoot-oidc` (confidential, for Chatwoot SSO)
+   - `kb-chat-demo-client-id` (public, for frontend)
+   - `outline` (confidential, for Outline OIDC)
+   - `chatwoot` (confidential, for Chatwoot SSO)
 4. redirect URIs:
    - `http://localhost:3000/*` (frontend/Outline)
    - `http://localhost:4000/`
