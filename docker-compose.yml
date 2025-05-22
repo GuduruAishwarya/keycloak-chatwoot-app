@@ -1,0 +1,138 @@
+version: "3.8"
+
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    ports:
+      - "8080:8080"
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    command: start-dev --import-realm
+    volumes:
+      - keycloak_data:/opt/keycloak/data
+      - ./kb-chat-demo-realm.json:/opt/keycloak/data/import/kb-chat-demo-realm.json
+
+  # Chatwoot Postgres uses default port 5432 on host
+  chatwoot-db:
+    image: postgres:13
+    restart: always
+    environment:
+      POSTGRES_USER: chatwoot
+      POSTGRES_PASSWORD: chatwoot
+      POSTGRES_DB: chatwoot
+    volumes:
+      - chatwoot_postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  # Chatwoot Redis uses default port 6379 on host
+  chatwoot-redis:
+    image: redis:alpine
+    restart: always
+    volumes:
+      - chatwoot_redis_data:/data
+    ports:
+      - "6379:6379"
+
+  chatwoot:
+    image: chatwoot/chatwoot:v3.9.0
+    restart: always
+    ports:
+      - "3001:3000"
+    env_file:
+      - ./frontend/.env
+    environment:
+      RAILS_ENV: production
+      SECRET_KEY_BASE: 4f5c2e4f3e9a4a5c8c6f8b7e5d4c2a1f
+      POSTGRES_HOST: chatwoot-db
+      POSTGRES_USERNAME: chatwoot
+      POSTGRES_PASSWORD: chatwoot
+      POSTGRES_DATABASE: chatwoot
+      REDIS_URL: redis://chatwoot-redis:6379
+      ENABLE_ACCOUNT_SIGNUP: "true"
+      FORCE_HTTPS: "false"
+      FRONTEND_URL: http://localhost:4000
+      OIDC_CLIENT_ID: chatwoot
+      OIDC_CLIENT_SECRET: vFqjFpnbkWyG6ZOa8J7IJieHavItsdlS
+      OIDC_AUTH_URI: http://localhost:8080/realms/kb-chat-demo/protocol/openid-connect/auth
+      OIDC_TOKEN_URI: http://localhost:8080/realms/kb-chat-demo/protocol/openid-connect/token
+      OIDC_USERINFO_URI: http://localhost:8080/realms/kb-chat-demo/protocol/openid-connect/userinfo
+      OIDC_LOGOUT_URI: http://localhost:8080/realms/kb-chat-demo/protocol/openid-connect/logout
+    depends_on:
+      - chatwoot-db
+      - chatwoot-redis
+    volumes:
+      - chatwoot_data:/app/storage
+
+  # Use a different host port for this postgres to avoid conflict with chatwoot-db
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: outline
+      POSTGRES_USER: outline
+      POSTGRES_PASSWORD: outline
+    ports:
+      - "5433:5432"   # Changed host port to 5433 to avoid conflict
+
+  # Use a different host port for this redis to avoid conflict with chatwoot-redis
+  redis:
+    image: redis
+    ports:
+      - "6380:6379"   # Changed host port to 6380
+
+  outline:
+    build: ./outline
+    ports:
+      - "3000:3000"
+    environment:
+      URL: http://localhost:3000
+      DATABASE_URL: postgres://outline:outline@postgres:5433/outline
+      REDIS_URL: redis://redis:6380
+      PGSSLMODE: disable
+      SECRET_KEY: 5923bf732ba981922c5affce0af9d1c010a0131e58737297ff0bc69db1b32f6f
+      UTILS_SECRET: 541d94e2f23a8f7430a39c311e1a1bd9d2677c1d379742e45fce2d669e2df79d
+      SMTP_FROM_EMAIL: outline@example.com
+      SMTP_HOST: smtp.mailtrap.io
+      SMTP_PORT: 2525
+      SMTP_USERNAME: user
+      SMTP_PASSWORD: pass
+      AUTHENTICATION_BACKENDS: email
+      FORCE_HTTPS: "false"
+    depends_on:
+      - postgres
+      - redis
+
+  outline-seed:
+    image: node:20
+    depends_on:
+      - outline
+    volumes:
+      - ./articles.json:/app/articles.json
+      - ./seed.js:/app/seed.js
+    working_dir: /app
+    environment:
+      OUTLINE_API_TOKEN: f7a05f3c0ed8413e8a3e1d74053b39d1b45b50c1580d9857df9f7bb1a8a7c2fd
+    command: >
+      sh -c "until nc -z outline 3000; do echo 'Waiting for Outline API...'; sleep 3; done && node seed.js"
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "4000:3000"
+    env_file:
+      - ./frontend/.env
+    environment:
+      NEXT_PUBLIC_KEYCLOAK_URL: http://localhost:8080
+      NEXT_PUBLIC_OUTLINE_URL: http://localhost:3000
+    depends_on:
+      - keycloak
+      - outline
+
+volumes:
+  keycloak_data:
+  chatwoot_postgres_data:
+  chatwoot_redis_data:
+  chatwoot_data:
+  postgres_data:
+  redis_data:

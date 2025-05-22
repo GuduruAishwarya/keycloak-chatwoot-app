@@ -1,0 +1,47 @@
+.homeWrapper {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #e0e7ff 0%, #f5f7fa 100%);
+}
+.homeHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 3rem;
+  background: #fff;
+  box-shadow: 0 3px 16px #e0e7ff;
+  border-radius: 0 0 24px 24px;
+}
+.homeTitle {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #3730a3;
+  margin: 0;
+}
+.logoutButton {
+  padding: 0.7rem 2rem;
+  font-size: 1.1rem;
+  background: linear-gradient(90deg, #6366f1 0%, #818cf8 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.logoutButton:hover {
+  background: linear-gradient(90deg, #4f46e5 0%, #6366f1 100%);
+}
+.homeMain {
+  max-width: 1200px;
+  margin: 2rem auto 0 auto;
+  padding: 2rem 1rem;
+  background: rgba(255,255,255,0.9);
+  border-radius: 16px;
+  box-shadow: 0 2px 12px #e0e7ff;
+}
+.error {
+  color: #ef4444;
+  font-size: 1rem;
+  text-align: center;
+  margin-top: 1rem;
+}

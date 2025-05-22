@@ -1,0 +1,28 @@
+[
+    {
+      "collection": "Getting Started",
+      "title": "Welcome to Outline",
+      "text": "Outline is an open source knowledge base and wiki for teams. Use this article to get started with the basics."
+    },
+    {
+      "collection": "Getting Started",
+      "title": "Creating Your First Document",
+      "text": "To create your first document, click the 'New Document' button on the sidebar. Add your content and save."
+    },
+    {
+      "collection": "Productivity Tips",
+      "title": "Using Keyboard Shortcuts",
+      "text": "Outline supports many keyboard shortcuts to speed up your workflow. For example, press Ctrl+K to search quickly."
+    },
+    {
+      "collection": "Productivity Tips",
+      "title": "Organizing Collections",
+      "text": "Use collections to organize related documents. You can create, rename, or delete collections easily."
+    },
+    {
+      "collection": "Technical",
+      "title": "API Authentication",
+      "text": "Outline uses Bearer tokens for API authentication. Include your API token in the Authorization header for secure access."
+    }
+  ]
+  
